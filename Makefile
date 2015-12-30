@@ -1,6 +1,10 @@
+# Makefile for my morse coder project for Raspberry Pi
+
 WIRPATH = ~/wiringPi/wiringPi/
+# Path to wriringPi files, since we need to compile against these
 
 OBJS = softTone.o softPwm.o piHiPri.o wiringPi.o
+# Make sure these are built, or add targets for them to this Makefile
 
 WIROBJS = $(addprefix $(WIRPATH), $(OBJS))
 
@@ -8,10 +12,8 @@ HEADER = $(addprefix $(WIRPATH), wiringPi.h)
 
 LIBS = -lpthread
 
-swiftblink: $(WIROBJS) test.o
-	swiftc test.o $(WIROBJS) -o test $(LIBS)
-test.o: test.swift
-	swiftc -c test.swift -import-objc-header $(HEADER)
+all: morsewrite morseread
+
 morsewrite: $(WIROBJS) morsewrite.o
 	swiftc morsewrite.o $(WIROBJS) -o morsewrite $(LIBS)
 morseread: $(WIROBJS) morseread.o
