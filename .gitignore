@@ -1,0 +1,6 @@
+#Ignore object files
+*.o
+
+# and the two executables
+morseread
+morsewrite
