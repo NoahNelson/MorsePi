@@ -2,13 +2,13 @@ import Glibc
 
 let BUTTON: Int32 = 4
 // Longest a press can be before it's definitely definitely a long press
-let PRESSMAX = 3000000
+let PRESSMAX = 40
 // Longest a short press can be
-let SHORTPRESS = 2000000
+let SHORTPRESS = 20
 // The length of a pause in between words
-let WORDPAUSE = 7000000
+let WORDPAUSE = 120
 // The length of time the button can be unpressed before the program quits
-let QUITPAUSE = 20000000
+let QUITPAUSE = 200
 
 let morseTable = [".-": "a", "-...": "b", "-.-.": "c", "-..": "d", ".": "e",
                   "..-.": "f", "--.": "g", "....": "h", "..": "i", ".---": "j",
@@ -30,7 +30,7 @@ guard digitalRead(BUTTON) == HIGH else {
 /**
  Waits for the button to be released, then returns the length it was pressed.
 
- Maxes out at 3 million, 3 000 000. It still WILL NOT RETURN until the button
+ Maxes out at PRESSMAX. It still WILL NOT RETURN until the button
  is released.
  */
 func lengthOfPress() -> Int {
@@ -39,6 +39,7 @@ func lengthOfPress() -> Int {
         if counter < PRESSMAX {
             counter += 1
         }
+        delay(10)
     }
     return counter
 }
@@ -55,6 +56,7 @@ func lengthOfUnpress() -> Int {
         if counter == QUITPAUSE {
             return QUITPAUSE
         }
+        delay(10)
     }
     return counter
 }
@@ -77,7 +79,6 @@ while true {
         while true {
             // each run of this is a dit or a dah
             var press = lengthOfPress()
-            print("press lasted \(press)")
             if press < SHORTPRESS {
                 // short press
                 morseLetter += "."
@@ -86,26 +87,25 @@ while true {
                 morseLetter += "-"
             }
             unpress = lengthOfUnpress()
-            if unpress < SHORTPRESS {
+            if unpress < PRESSMAX {
                 // same letter
             } else {
                 // next letter, or we're done
                 break
             }
         }
-        print("we did a letter \(morseLetter)")
         // letter is done, add it to the word
         if let letter = morseTable[morseLetter] {
             word += letter
         } else {
             print("Unrecognized letter \(morseLetter)!")
         }
-        if unpress > WORDPAUSE {
+        if unpress >= WORDPAUSE {
             break
         }
     }
     words.append(word)
-    if unpress > QUITPAUSE {
+    if unpress >= QUITPAUSE {
         break
     }
 }
